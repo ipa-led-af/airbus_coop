@@ -11,8 +11,11 @@ import geometry_msgs.msg
 from gazebo_msgs.srv import SpawnModel
 from std_msgs.msg import String
 from geometry_msgs.msg import PoseStamped
+from move_base_msgs.msg import MoveBaseAction
+from move_base_msgs.msg import MoveBaseGoal
 import ast
 import copy
+import actionlib
 
 class InitMoveit(ssm_state.ssmState):
 	'''@SSM
@@ -30,7 +33,7 @@ class InitMoveit(ssm_state.ssmState):
 		#self.scene = moveit_commander.PlanningSceneInterface()	
 		rospy.sleep(1)
 		print("Moveit commander initialized !") 
-		return("success")
+		return "success"
 
 
 
@@ -178,7 +181,7 @@ class MoveArti(ssm_state.ssmState):
 		for target in self.acquireJointsUD(ud.joints):
 			
 			print(target)
-			for i in range (0,6):
+			for i in range (0,len(target)):
 				target[i] = np.deg2rad(target[i])
 			self.group.set_joint_value_target(target)
 			self.plan = self.group.plan()		
@@ -203,7 +206,7 @@ class Pick(ssm_state.ssmState):
 									  
 	def execution(self,ud):
 		#Getting the gripper move group
-		self.group_gripper = moveit_commander.MoveGroupCommander(ud.tool)
+		self.group_gripper = moveit_commander.MoveGroupCommander(ud.tool)	
 		#Picking execution
 		self.group_gripper.attach_object(ud.obj)
 		#self.group_gripper.pick(ud.obj)
@@ -226,7 +229,7 @@ class Place(ssm_state.ssmState):
 									  
 	def execution(self,ud):
 		#Getting the gripper move group
-		self.group_gripper = moveit_commander.MoveGroupCommander(ud.tool)
+		self.group_gripper = moveit_commander.MoveGroupCommander(ud.tool)	
 		#Placing execution
 		self.group_gripper.detach_object(ud.obj)
 		#self.group_gripper.place(ud.obj)
@@ -369,11 +372,7 @@ class Sensor(ssm_state.ssmState):
 	def __init__(self):
 		ssm_state.ssmState.__init__(self,outcomes=["success"],io_keys=["objpos"])
 		self.pub = rospy.Publisher('chatter', PoseStamped, queue_size=10)
-		self.msg = PoseStamped()
-		self.msg.pose.position.x=0
-		self.msg.pose.position.y=0
-		self.msg.pose.position.z=0
-		
+
 		
 	def callback(self,data):
 		rospy.loginfo(rospy.get_caller_id() + "I heard %s", (data.pose.position.x,data.pose.position.y,data.pose.position.z))	
@@ -382,19 +381,24 @@ class Sensor(ssm_state.ssmState):
 		self.z=data.pose.position.z
 		
 	def execution(self,ud):	
-						
+		self.msg = PoseStamped()
+		self.msg.pose.position.x=0
+		self.msg.pose.position.y=0
+		self.msg.pose.position.z=0
+					
 		self.sensor_info = rospy.Subscriber("/chatter", PoseStamped, self.callback)
 			
-		rospy.wait_for_message("/chatter", PoseStamped) #boucle
+		#rospy.wait_for_message("/chatter", PoseStamped) #boucle
 		
-		print("RECU")
-		print(self.x)
-		print(self.y)
-		print(self.z)
+		#print("RECU")
+		#print(self.x)
+		#print(self.y)
+		#print(self.z)
 		
-		ud.objpos = [self.x,self.y,self.z]
+		#ud.objpos = [self.x,self.y,self.z]
 		
 		return "success"
+
 
 """
 class GenWorld(ssm_state.ssmState):
@@ -431,3 +435,108 @@ class GenWorld(ssm_state.ssmState):
 		
 """
 
+
+class MoveBase(ssm_state.ssmState):
+	'''@SSM
+	Description :  Skill that makes a mobile base move
+	User-data :
+	- goal : the goal position for the mobile base
+	- frame : the name of the reference frame (string)
+	Outcome :
+	- success : successfully move to the target
+	'''
+	def __init__(self):
+		ssm_state.ssmState.__init__(self,outcomes=["success"],io_keys=["goal","frame"])
+		
+	def acquireFrameUD(self,ud):
+		target_list = ast.literal_eval(ud)
+		return target_list  
+		
+	def eulerToQuaternion(self,angles):
+		roll = np.deg2rad(angles[3])
+		pitch = np.deg2rad(angles[4])
+		yaw = np.deg2rad(angles[5])
+		quaternion_tf = tf.transformations.quaternion_from_euler(roll,pitch,yaw)
+		quaternion = [quaternion_tf[0],quaternion_tf[1],quaternion_tf[2],quaternion_tf[3]]
+		return quaternion
+		
+	def poseTarget(self,target_pos,frame):
+		pose_target = PoseStamped()
+		pose_target.header.frame_id = frame
+		#Translations 
+		pose_target.pose.position.x = target_pos[0]
+		pose_target.pose.position.y = target_pos[1]
+		pose_target.pose.position.z = target_pos[2]
+		#Rotations				
+		pose_target.pose.orientation.x = target_pos[3]
+		pose_target.pose.orientation.y = target_pos[4]
+		pose_target.pose.orientation.z = target_pos[5]
+		pose_target.pose.orientation.w = target_pos[6]
+		return pose_target
+			
+	def execution(self,ud):	
+		print("MOVE BASE")
+		self.client = actionlib.SimpleActionClient('move_base', MoveBaseAction)
+		self.client.wait_for_server()
+	
+		self.goal_target = self.acquireFrameUD(ud.goal)
+		self.goal_translation = [self.goal_target[0],self.goal_target[1],self.goal_target[2]]
+		self.goal_quaternion = self.eulerToQuaternion(self.goal_target)
+		self.goal_tr = self.goal_translation + self.goal_quaternion
+
+		self.poseStamp = self.poseTarget(self.goal_tr,ud.frame)
+		self.goal = MoveBaseGoal(self.poseStamp)
+				
+		self.client.send_goal(self.goal)
+		self.client.wait_for_result(rospy.Duration.from_sec(5.0))
+		
+		return "success"
+
+
+
+class OpenGripper(ssm_state.ssmState):
+	'''@SSM
+	Description :  Action skill that open the gripper
+	User-data :
+	- tool : a tool moveit move group name (string)
+	Outcome :
+	- success : sucessfully picked the object
+	'''
+	def __init__(self):
+		ssm_state.ssmState.__init__(self,outcomes=["success"],io_keys=["tool","obj"])	
+		self.opened_gripper_value = [0.011,0.011]
+														  
+	def execution(self,ud):
+		print("OPEN GRIPPER")
+		#Getting the gripper move group
+		group = moveit_commander.MoveGroupCommander(ud.tool)	
+		print(group.get_current_joint_values())
+		group.set_joint_value_target(self.opened_gripper_value)
+		plan = group.plan()
+		group.execute(plan)
+		rospy.sleep(3) 	
+		return "success"
+
+
+
+class CloseGripper(ssm_state.ssmState):
+	'''@SSM
+	Description :  Action skill that close the gripper
+	User-data :
+	- tool : a tool moveit move group name (string)
+	Outcome :
+	- success : sucessfully place the object
+	'''
+	def __init__(self):
+		ssm_state.ssmState.__init__(self,outcomes=["success"],io_keys=["tool","obj"])
+		self.closed_gripper_value = [0.001,0.001]	
+							  
+	def execution(self,ud):
+		print("CLOSE GRIPPER")
+		#Getting the gripper move group
+		group = moveit_commander.MoveGroupCommander(ud.tool)			
+		group.set_joint_value_target(self.closed_gripper_value)
+		plan = group.plan()
+		group.execute(plan)
+		rospy.sleep(3)	 
+		return "success"
