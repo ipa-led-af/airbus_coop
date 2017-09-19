@@ -8,9 +8,9 @@
         <data id="obj" expr="unit_sphere_1"/>
     </datamodel>
     <parallel id="Init">
-        <qt:editorinfo scenegeometry="29.41;326.69;53.58;-33.65;534.80;542.12" geometry="29.41;326.69;24.17;-360.34;534.80;542.12"/>
+        <qt:editorinfo scenegeometry="29.41;326.69;48.01;-47.66;540.37;556.13" geometry="29.41;326.69;18.60;-374.35;540.37;556.13"/>
         <transition type="external" event="success" target="Move" cond="Robot.success AND Camera.success">
-            <qt:editorinfo endTargetFactors="49.61;22.77" movePoint="-33.48;4.64"/>
+            <qt:editorinfo movePoint="-33.48;4.64" endTargetFactors="49.61;22.77"/>
         </transition>
         <state id="Camera">
             <qt:editorinfo scenegeometry="409.67;227.23;391.06;48.08;175.06;435.45" geometry="380.26;-99.46;-18.61;-179.15;175.06;435.45"/>
@@ -32,18 +32,16 @@
             </initial>
         </state>
         <state id="Robot">
-            <qt:editorinfo scenegeometry="132.75;261.03;73.58;38.88;295.37;447.35" geometry="103.34;-65.66;-59.17;-222.15;295.37;447.35"/>
+            <qt:editorinfo scenegeometry="134.14;277.73;69.40;44.43;311.87;442.46" geometry="104.73;-48.96;-64.74;-233.30;311.87;442.46"/>
             <final id="Final_7">
-                <qt:editorinfo scenegeometry="301.40;406.65;281.40;386.65;40;40" geometry="161.93;143.38;-20;-20;40;40"/>
+                <qt:editorinfo scenegeometry="144.37;414.15;124.37;394.15;40;40" geometry="11.62;153.12;-20;-20;40;40"/>
             </final>
             <initial>
-                <qt:editorinfo scenegeometry="148.40;136.27;128.40;116.27;40;40" geometry="8.93;-127;-20;-20;40;40"/>
-                <transition type="external" target="InitMoveit">
-                    <qt:editorinfo endTargetFactors="53.71;28.01" movePoint="-5.50;-2.20"/>
-                </transition>
+                <qt:editorinfo scenegeometry="119.41;139.60;99.41;119.60;40;40" geometry="-13.34;-121.43;-20;-20;40;40"/>
+                <transition type="external" target="RobotInfo"/>
             </initial>
             <state id="Home">
-                <qt:editorinfo scenegeometry="153.58;403.28;93.58;353.28;120;100" geometry="20.83;142.25;-60;-50;120;100"/>
+                <qt:editorinfo scenegeometry="148.01;275.24;88.01;225.24;120;100" geometry="15.26;14.21;-60;-50;120;100"/>
                 <datamodel>
                     <data id="skill" expr="MoveArti"/>
                     <data id="joints" expr="[[0,10,0,0,0]]"/>
@@ -53,30 +51,21 @@
                 </transition>
             </state>
             <state id="RobotInfo">
-                <qt:editorinfo scenegeometry="292.68;282.91;232.68;232.91;120;100" geometry="153.21;19.64;-60;-50;120;100"/>
+                <qt:editorinfo scenegeometry="295.70;144.28;235.70;94.28;120;100" geometry="162.95;-116.75;-60;-50;120;100"/>
                 <datamodel>
                     <data id="skill" expr="RobotInfo"/>
                 </datamodel>
                 <transition type="external" event="success" target="GroupInfo">
-                    <qt:editorinfo startTargetFactors="10.29;51.68" endTargetFactors="73.17;57.45" movePoint="6.89;-19.78"/>
+                    <qt:editorinfo movePoint="33.34;8.05" startTargetFactors="51.27;90.52" endTargetFactors="55.24;10.34"/>
                 </transition>
             </state>
             <state id="GroupInfo">
-                <qt:editorinfo scenegeometry="161.08;276.68;101.08;226.68;120;100" geometry="21.61;13.41;-60;-50;120;100"/>
+                <qt:editorinfo scenegeometry="292.14;277.22;232.14;227.22;120;100" geometry="159.39;16.19;-60;-50;120;100"/>
                 <datamodel>
                     <data id="skill" expr="GroupInfo"/>
                 </datamodel>
                 <transition type="external" event="success" target="Home">
                     <qt:editorinfo movePoint="28.52;5.18"/>
-                </transition>
-            </state>
-            <state id="InitMoveit">
-                <qt:editorinfo scenegeometry="286.78;157.96;226.78;107.96;120;100" geometry="147.31;-105.31;-60;-50;120;100"/>
-                <datamodel>
-                    <data id="skill" expr="InitMoveit"/>
-                </datamodel>
-                <transition type="external" event="success" target="RobotInfo">
-                    <qt:editorinfo startTargetFactors="55.64;89.66" movePoint="29.95;5.95"/>
                 </transition>
             </state>
         </state>
@@ -91,7 +80,7 @@
                     <data id="skill" expr="Pick"/>
                 </datamodel>
                 <transition type="external" event="success" target="MoveCart2Pick">
-                    <qt:editorinfo endTargetFactors="9.56;47.47" movePoint="8.80;37.40"/>
+                    <qt:editorinfo movePoint="8.80;37.40" endTargetFactors="9.56;47.47"/>
                 </transition>
             </state>
             <final id="Final_8">
@@ -136,7 +125,7 @@
                 <data expr="[[0,30,0,0,0]]" id="joints"/>
             </datamodel>
             <transition type="external" event="success" target="Picking">
-                <qt:editorinfo endTargetFactors="50.23;18.57" movePoint="24.18;1.35"/>
+                <qt:editorinfo movePoint="24.18;1.35" endTargetFactors="50.23;18.57"/>
             </transition>
         </state>
         <state id="MoveArti3">
@@ -202,7 +191,7 @@
                 <data expr="[[0,30,-20,0,0],[0,30,-20,20,0]]" id="joints"/>
             </datamodel>
             <transition type="external" event="success" target="Placement">
-                <qt:editorinfo endTargetFactors="51.33;10.38" movePoint="29.55;6.71"/>
+                <qt:editorinfo movePoint="29.55;6.71" endTargetFactors="51.33;10.38"/>
             </transition>
         </state>
         <initial>

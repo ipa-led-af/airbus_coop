@@ -11,11 +11,12 @@ import geometry_msgs.msg
 from gazebo_msgs.srv import SpawnModel
 from std_msgs.msg import String
 from geometry_msgs.msg import PoseStamped
+from move_base_msgs.msg import MoveBaseAction
+from move_base_msgs.msg import MoveBaseGoal
 from moveit_msgs.msg import ExecuteTrajectoryActionResult 
 import ast
 import copy
-from moveit_msgs.msg import RobotTrajectory
-from trajectory_msgs.msg import JointTrajectoryPoint
+import actionlib
 
 
 class MoveCart(ssm_state.ssmState):

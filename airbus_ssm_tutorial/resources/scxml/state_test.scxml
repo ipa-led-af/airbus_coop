@@ -1,42 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" binding="early" xmlns:qt="http://www.qt.io/2015/02/scxml-ext" name="state_test" qt:editorversion="4.4.0" initial="InitMoveit">
-    <qt:editorinfo initialGeometry="256.88;137.14;-20;-20;40;40"/>
+<scxml xmlns="http://www.w3.org/2005/07/scxml" version="1.0" binding="early" xmlns:qt="http://www.qt.io/2015/02/scxml-ext" name="state_test" qt:editorversion="4.4.0" initial="RobotInfo">
+    <qt:editorinfo initialGeometry="228.40;44.54;-20;-20;40;40"/>
     <final id="Final_1">
-        <qt:editorinfo geometry="299.86;719.45;-20;-20;40;40" scenegeometry="299.86;719.45;279.86;699.45;40;40"/>
+        <qt:editorinfo scenegeometry="272.64;790.45;252.64;770.45;40;40" geometry="272.64;790.45;-20;-20;40;40"/>
     </final>
     <datamodel>
         <data expr="${airbus_ssm_tutorial}/resources/skills.xml" id="skill_file"/>
-        <data id="group" expr="arm"/>
+        <data id="tool" expr="gripper"/>
     </datamodel>
-    <state id="MoveCart">
-        <qt:editorinfo geometry="316.23;537.08;-60;-50;120;100" scenegeometry="316.23;537.08;256.23;487.08;120;100"/>
-        <transition type="external" event="success" target="Final_1">
-            <qt:editorinfo movePoint="35.82;1.02"/>
-        </transition>
+    <state id="MoveBaseDF">
+        <qt:editorinfo scenegeometry="271.64;306.63;125.16;256.63;206.48;100" geometry="271.64;306.63;-146.48;-50;206.48;100"/>
         <datamodel>
-            <data id="skill" expr="MoveCart"/>
-            <data id="target" expr="[[0.4,0,0.6,0,-180,0],[0.3,0.1,0.6,0,-180,0],[0.25,0.2,0.6,0,-180,0],[0.25,0.2,0.7,0,-180,0],[0.4,0.1,0.7,0,-180,0],[0.3,0.3,0.7,0,-180,0],[0.2,0.4,0.7,0,-180,0],[0,0.4,0.5,0,-180,0]]"/>
-            <data id="frame" expr="base_link"/>
-            <data id="offset" expr="[0,0,0,0,0,0]"/>
+            <data id="skill" expr="MoveBase"/>
+            <data id="goal" expr="[1,1,0,0,0,0]"/>
+            <data id="frame" expr="/odom"/>
         </datamodel>
+        <transition type="external" event="success" target="Open1"/>
     </state>
-    <state id="InitMoveit">
-        <qt:editorinfo geometry="316.23;230.27;-60;-50;120;100" scenegeometry="316.23;230.27;256.23;180.27;120;100"/>
-        <transition type="external" event="success" target="MoveArti">
-            <qt:editorinfo movePoint="1.02;1.02"/>
-        </transition>
+    <state id="Open1">
+        <qt:editorinfo scenegeometry="184.18;458.91;124.18;408.91;120;100" geometry="184.18;458.91;-60;-50;120;100"/>
         <datamodel>
-            <data id="skill" expr="InitMoveit"/>
+            <data id="skill" expr="OpenGripper"/>
         </datamodel>
+        <transition type="external" event="success" target="Close1"/>
     </state>
-    <state id="MoveArti">
-        <qt:editorinfo geometry="316.23;371.86;-60;-50;120;100" scenegeometry="316.23;371.86;256.23;321.86;120;100"/>
+    <state id="Open2">
+        <qt:editorinfo scenegeometry="411.58;458.91;351.58;408.91;120;100" geometry="411.58;458.91;-60;-50;120;100"/>
         <datamodel>
-            <data id="skill" expr="MoveArti"/>
-            <data id="joints" expr="[[45,0,0,0,0,0],[45,30,20,0,0,0],[45,30,20,0,90,0]]"/>
+            <data id="skill" expr="OpenGripper"/>
         </datamodel>
-        <transition type="external" event="success" target="MoveCart">
-            <qt:editorinfo endTargetFactors="90.63;44.71" movePoint="3.07;14.33"/>
+        <transition type="external" event="success" target="Close2"/>
+    </state>
+    <state id="Close2">
+        <qt:editorinfo scenegeometry="411.58;619.42;351.58;569.42;120;100" geometry="411.58;619.42;-60;-50;120;100"/>
+        <datamodel>
+            <data id="skill" expr="CloseGripper"/>
+        </datamodel>
+        <transition type="external" event="success" target="Final_1"/>
+    </state>
+    <state id="Close1">
+        <qt:editorinfo scenegeometry="184.18;619.42;124.18;569.42;120;100" geometry="184.18;619.42;-60;-50;120;100"/>
+        <datamodel>
+            <data id="skill" expr="CloseGripper"/>
+        </datamodel>
+        <transition type="external" event="success" target="Open2"/>
+    </state>
+    <state id="RobotInfo">
+        <qt:editorinfo scenegeometry="427.01;159.49;367.01;109.49;120;100" geometry="427.01;159.49;-60;-50;120;100"/>
+        <datamodel>
+            <data id="skill" expr="RobotInfo"/>
+        </datamodel>
+        <transition type="external" event="success" target="MoveBaseDF">
+            <qt:editorinfo endTargetFactors="75.91;42.02"/>
         </transition>
     </state>
 </scxml>
