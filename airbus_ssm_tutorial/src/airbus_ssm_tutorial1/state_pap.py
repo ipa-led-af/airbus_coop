@@ -276,51 +276,32 @@ class Place(ssm_state.ssmState):
 		return "success"
 
 
-class OpenGripper(ssm_state.ssmState):
+class Gripper(ssm_state.ssmState):
 	'''@SSM
-	Description :  Action skill that open the gripper
+	Description :  Action skill that open or close the gripper
 	User-data :
 	- tool : a tool moveit move group name (string)
+	- opening : value of the opening [1 = totally open, 0 = totally closed] (float)
 	Outcome :
 	- success : sucessfully picked the object
 	'''
 	def __init__(self):
-		ssm_state.ssmState.__init__(self,outcomes=["success"],io_keys=["tool","obj"])	
-		self.opened_gripper_value = [0.011,0.011]
+		ssm_state.ssmState.__init__(self,outcomes=["success"],io_keys=["tool","opening"])	
+		self.opened_gripper_value = 0.011
+		self.closed_gripper_value = 0.001
 														  
 	def execution(self,ud):
 		print("OPEN GRIPPER")
 		#Getting the gripper move group
+		widening = float(ud.opening) * (self.opened_gripper_value - self.closed_gripper_value) + self.closed_gripper_value
+		claw_widening = [widening,widening]
+		
 		group = moveit_commander.MoveGroupCommander(ud.tool)	
 		print(group.get_current_joint_values())
-		group.set_joint_value_target(self.opened_gripper_value)
+		group.set_joint_value_target(claw_widening)
 		plan = group.plan()
 		group.execute(plan)
 		rospy.sleep(3) 	
-		return "success"
-
-
-
-class CloseGripper(ssm_state.ssmState):
-	'''@SSM
-	Description :  Action skill that close the gripper
-	User-data :
-	- tool : a tool moveit move group name (string)
-	Outcome :
-	- success : sucessfully place the object
-	'''
-	def __init__(self):
-		ssm_state.ssmState.__init__(self,outcomes=["success"],io_keys=["tool","obj"])
-		self.closed_gripper_value = [0.001,0.001]	
-							  
-	def execution(self,ud):
-		print("CLOSE GRIPPER")
-		#Getting the gripper move group
-		group = moveit_commander.MoveGroupCommander(ud.tool)			
-		group.set_joint_value_target(self.closed_gripper_value)
-		plan = group.plan()
-		group.execute(plan)
-		rospy.sleep(3)	 
 		return "success"
 
 

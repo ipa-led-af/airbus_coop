@@ -14,8 +14,7 @@
 	<skill name="MoveBase"		pkg="airbus_ssm_tutorial" 	module="airbus_ssm_tutorial1.state_pap" class="MoveBase"/>
 	<skill name="Pick"		pkg="airbus_ssm_tutorial" 	module="airbus_ssm_tutorial1.state_pap" class="Pick"/>
 	<skill name="Place"		pkg="airbus_ssm_tutorial" 	module="airbus_ssm_tutorial1.state_pap" class="Place"/>
-	<skill name="OpenGripper"		pkg="airbus_ssm_tutorial" 	module="airbus_ssm_tutorial1.state_pap" class="OpenGripper"/>
-	<skill name="CloseGripper"		pkg="airbus_ssm_tutorial" 	module="airbus_ssm_tutorial1.state_pap" class="CloseGripper"/>
+	<skill name="Gripper"		pkg="airbus_ssm_tutorial" 	module="airbus_ssm_tutorial1.state_pap" class="Gripper"/>
 	<skill name="Sensor"		pkg="airbus_ssm_tutorial" 	module="airbus_ssm_tutorial1.state_pap" class="Sensor"/>
 	<skill name="RobotInfo"		pkg="airbus_ssm_tutorial" 	module="airbus_ssm_tutorial1.state_pap" class="RobotInfo"/>
 	<skill name="GroupInfo"		pkg="airbus_ssm_tutorial" 	module="airbus_ssm_tutorial1.state_pap" class="GroupInfo"/>
